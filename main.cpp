@@ -1,22 +1,22 @@
 #include <iostream>
 #include <fstream>
-#include <vector> 
 #include <cstdlib>
+#include <list>
 #include "Components.hpp"
 
 using namespace std;
 int main()
 {
 	ifstream infile;
-	infile.open("circuit.txt", 'r');
+	infile.open("circuit.txt");
 
 	if (!infile.is_open())
 	{
 		cout << "could not open file";
 		exit(EXIT_FAILURE);
 	}
-
-	vector<ImpedanceDevice*> circuit;
+	
+	list<ImpedanceDevice*> circuit;
 	char component;
 	double value;
 	while (infile >> component >> value)
@@ -37,8 +37,16 @@ int main()
 
 	infile.close();
 
-	for (int i = 0; i < circuit.size(); i++)
-		cout << circuit.at(i)->get_impedance(1000);
+	list<ImpedanceDevice*>::iterator it;
+
+	for (it = circuit.begin(); it != circuit.end(); ++it)
+	{
+		if ((*it)->get_impedance(1000).imag() < 0)
+			cout << (*it)->get_impedance(1000).real() << "-" << -(*it)->get_impedance(1000).imag() << "i" << endl;
+		else
+			cout << (*it)->get_impedance(1000).real() << "+" << (*it)->get_impedance(1000).imag() << "i" << endl;
+	}
+
 
 	return 0;
 }
